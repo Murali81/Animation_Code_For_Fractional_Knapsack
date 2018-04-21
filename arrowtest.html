@@ -1,0 +1,308 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<title>Animation of Sorting Algorithms</title>
+<script type = "text/javascript"> 
+
+var TargetTick;
+var Tick;
+var Timer1;
+var  A; // The array to be sorted
+
+var arr0 = "<span id='arr0' >curr&darr;</span>";
+var arr1 = "<span id='arr1' >min&darr;</span>";
+
+
+//var weights=[10,20,30,57,43];
+//var values=[60,100,110,43,69];
+//A=new Array(weights.length);
+ A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
+  A = [79,56,19,44,86];
+
+ function createfractions()
+ {
+	 for (var i = 0; i < weights.length; i++) 
+	 {
+		A[i]=(values[i]/weights[i]).toFixed(2);;
+		//alert(A[i]);
+	 }
+ }
+ 
+ function ExecuteSort()
+{   
+     var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+
+     var Alg = parseInt(algorithmSelectList.options[algorithmSelectList.selectedIndex].value); 
+
+     TargetTick=1;
+    //createfractions();
+   // Start animation
+   if (Timer1) clearInterval(Timer1);
+   if (Alg == 0)
+      Timer1 = setInterval(AnimateSelectionSort,Speed); 
+   else
+      Timer1 = setInterval(AnimateInsertionSort,Speed);  
+
+	  }
+
+function copyDiv()
+{
+
+var firstDivContent = document.getElementById('OutDiv');
+var secondDivContent = document.getElementById('SortedElem');
+secondDivContent.innerHTML = firstDivContent.innerHTML;
+
+}
+	  
+
+function SelectionSort(A) 
+{   
+   for (var i = 0; i < A.length-1; i++) 
+   {  var min_pos=i ;
+      var min = A[i];
+      for(var j = i; j < A.length; j++)
+      {   if (A[j] < min )
+          {  min_pos= j; min =A[j] }
+
+          if (UpdateTick()) { PrintArray(A,i,j,min_pos); return; }
+      }
+
+      // swap A[i] with A[min_pos]
+      var t = A[i]; A[i] = A[min_pos]; A[min_pos] = t;
+   }
+
+   // (i > A.length) last call to Printarray() to show array after final swap
+   PrintArray(A,i+1,-1,-1); 
+   EndAnimate(); 
+}
+  
+
+function InsertionSort(A) 
+{   
+   for (var i = 1; i < A.length; i++) 
+   {  
+     var item = A[i];
+     var j = i-1;
+     //  find place for item
+     //  while( (j >= 0) && (item < A[j])) 
+     //  for animation, we moved the test for 2nd cond to inside of loop 
+     while ((j >= 0))   
+     {   if (UpdateTick())  
+         {  PrintArray(A,j+1,i,i);  return;  } 
+
+         if (item >= A[j]) break;
+
+         A[j+1] = A[j]; 
+         A[j] = item; // this is added for animation
+         j--;  
+      }
+     
+      A[j+1] = item; 
+   }
+    
+   PrintArray(A,i+1,-1,-1); 
+   EndAnimate(); 
+}
+ 
+
+function PrintArray(A, start,target, minpos)
+{  // This function renders the array A as an HTML list
+  
+   // alert(target);
+ 
+  var x =  "";
+  
+  for(var i= 0; i < A.length ; i++)
+  {  var st = ""; 
+      if (i < start) st = " class ='finished'";  
+   
+      var ext ="";
+
+     if (i==start) 
+     {  ext = arr0;  st = "style='background-color:white'";   }
+
+      if (i==target )
+     {    st  = "style='background-color:white'";  }
+
+     if  (i== minpos)  
+     {  ext += arr1;   st = " style='background-color:white;border-color: red'";  }
+       
+     
+     x += "<li " + st + ">" + A[i] + ext+   "</li>"; 
+  }  
+  
+   OutDiv.innerHTML =  "<ul>"  + x + "</ul>";  
+}
+
+
+function PrintGREEDY(A,totweight)
+{  // This function renders the array A as an HTML list
+  
+   // alert(target);
+  
+  var x =  "";
+  
+  for(var i= 0; i < A.length ; i++)
+  { 
+	
+  /* var st = ""; 
+      if (i < start) st = " class ='finished'";  
+   
+      var ext ="";
+
+     if (i==start) 
+     {  ext = arr0;  st = "style='background-color:white'";   }
+
+      if (i==target )
+     {    st  = "style='background-color:white'";  }
+
+     if  (i== minpos)  
+     {  ext += arr1;   st = " style='background-color:white;border-color: red'";  }
+*/
+var st="";       
+
+    var ext ="";
+     if (A[i]<totweight)
+	 {
+		st = " class ='placed'";	 
+		ext = arr0;
+	 }
+	 else
+	 {
+	 st="class ='finished'";
+	 ext=arr1;
+	 }
+     x += "<li " + st + ">" + A[i] + ext+   "</li>"; 
+  }  
+  var secondDivContent = document.getElementById('SortedElem');
+	secondDivContent.innerHTML = "<ul>"  + x + "</ul>";  
+  
+}
+ 
+
+
+// The pattern for AnimateSomeProcedure() is:
+
+//  Set TragetTick =1 (in caller)
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+// Note: Tick is incremented in UpateTick()
+
+function AnimateSelectionSort()  
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function 
+   
+   Tick=0;
+  // SelectionSort(A); 
+    SelectionSort_Rec(A,0) ;
+   TargetTick++;   
+}
+
+
+function AnimateInsertionSort()
+{ // This function is executed repeatedly via SetInterval()  
+  // Note: TargetTick is incremented with every call to this function 
+  
+  B = A.slice(); // Start from an original copy of A   
+  Tick=0; 
+  InsertionSort(B); 
+  TargetTick++;   
+}
+
+function EndAnimate()
+{  clearInterval(Timer1);
+	 copyDiv();
+	 PrintGREEDY(A,40);
+
+  } 
+ 
+function UpdateTick()
+{  Tick++;
+   return (Tick == TargetTick);
+}
+
+
+function SelectionSort_Rec(A,i) 
+{   
+    if (i >= A.length-1)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+       PrintArray(A,i+1,-1,-1); 
+       EndAnimate(); 
+       return;
+    }
+ 
+    var min_pos=i ;
+    var min = A[i];
+    for(var j = i; j < A.length; j++)
+    {  if (A[j] < min )
+       {  min_pos= j; min =A[j]; }
+
+       if (UpdateTick()) { PrintArray(A,i,j,min_pos); return; }
+    }
+
+    // swap A[i] with A[min_pos]
+    var t = A[i]; A[i] = A[min_pos]; A[min_pos] = t; 
+
+    SelectionSort_Rec(A,i+1); // Recursive call
+}
+
+</script>
+
+<style>
+
+body { margin-left:10px; }
+ul  { list-style-type: none;padding:12px 0px; }
+ul  li {position:relative; border:1px solid gray; display:inline-block; width:36px; height:36px; 
+text-align:center; line-height:36px;margin-left:20px; border-radius: 18px;background-color:lightgray} 
+
+.target { color:red; background:white}
+
+.finished { background:lightyellow }
+.placed { background:blue }
+
+ #arr0 , #arr1 { position:absolute; top:-2em; left:0px; padding:0; margin:0; font-weight:bold;  } 
+
+ #arr0 { color: blue;left:-15px;}
+ #arr1 { color: red; left:-8px;} 
+
+ label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
+
+ input[type=button] { margin-left:16px; padding:1px 12px; }
+
+ select  { font-size:1.1em; } 
+ label { font-style: italic;  }
+
+ #OutDiv { margin-top:40px; }
+ 
+</style>
+</head>
+<body>
+<h1>Animation of Selection Sort and Insertion Sort Algorithms</h1>
+ 
+<label>Speed <select id="speedSelectList" >
+<option  value="2000" >slow</option>
+<option  value="600" >medium</option>
+<option  value="20" >fast</option>
+</select>
+</label>
+
+<label>Algorithm <select id="algorithmSelectList" >
+<option  value="0" >Selection Sort</option>
+<option  value="1" >Insertion Sort</option>
+</select>
+</label>
+
+<input type="button" value="Start"  onclick="ExecuteSort()" />
+  
+<div  id="OutDiv" > 
+</div>
+
+
+<div  id="SortedElem"> 
+</div>
+
+</body>
+</html>
