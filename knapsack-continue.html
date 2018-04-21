@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Animation of Sorting Algorithms</title>
+<script type = "text/javascript">
+
+var TargetTick;
+var Tick;
+var Timer1;
+var  A; // The array to be sorted
+var totvalue=0;
+var totweight=50;
+var arr0 = "<span id='arr0' >&darr;</span>";
+var arr1 = "<span id='arr1' >&darr;</span>";
+var weights=[10,20,30,23]
+var values=[90,70,50,64]
+ A=[9,3.5,1.66,2.78];
+ A=[1.66,2.78,3.5,9]
+// A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
+
+function ExecuteSort()
+{
+     var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+
+     var Alg = parseInt(algorithmSelectList.options[algorithmSelectList.selectedIndex].value);
+
+     TargetTick=1;
+
+   // Start animation
+   if (Timer1) clearInterval(Timer1);
+   if (Alg == 0)
+      Timer1 = setInterval(AnimateSelectionSort,Speed);
+   else
+      Timer1 = setInterval(AnimateInsertionSort,Speed);
+}
+
+function PrintArray(A,currpos)
+{  // This function renders the array A as an HTML list
+
+   // alert(target);
+  // alert(currpos);
+  var x =  "";
+
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      var ext ="";
+     if  (i== currpos)
+     {
+       ext = arr1;   st = " style='background-color:white;border-color: green'";
+      // alert("current elemet");
+     }
+     if(i<currpos)
+      {st = " style='background-color:green;border-color: red'";  }
+     x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+  }
+  var firstDivContent = document.getElementById('OutDiv');
+   firstDivContent.innerHTML =  "<ul>"  + x + "</ul>";
+}
+
+
+
+// The pattern for AnimateSomeProcedure() is:
+
+//  Set TragetTick =1 (in caller)
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+// Note: Tick is incremented in UpateTick()
+
+function AnimateSelectionSort()
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function
+
+   Tick=0;
+  // SelectionSort(A);
+    SelectionSort_Rec(A,weights,values,0,totweight) ;
+   TargetTick++;
+  // alert(TargetTick);
+}
+
+
+function AnimateInsertionSort()
+{ // This function is executed repeatedly via SetInterval()
+  // Note: TargetTick is incremented with every call to this function
+
+  B = A.slice(); // Start from an original copy of A
+  Tick=0;
+  InsertionSort(B);
+  TargetTick++;
+}
+
+function EndAnimate()
+{  clearInterval(Timer1);
+  // alert("hello");
+}
+
+function UpdateTick()
+{  Tick++;
+   return (Tick == TargetTick);
+}
+
+
+function SelectionSort_Rec(A,weights,values,i,totweight)
+{
+    if (i > A.length)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+      // PrintArray(A,i+1);
+       EndAnimate();
+       return;
+    }
+
+    var weight=weights[i];
+    var value=values[i];
+    if(weight<=totweight)
+    {
+          // alert(weight+" "+totweight);
+          totweight=totweight-weight;
+          if (UpdateTick()) { PrintArray(A,i); return; }
+          // PrintArray(A,i);
+    }
+	else
+	{
+	      if (UpdateTick()) { PrintArray(A,i); return; }
+		         EndAnimate();
+       return;
+	}
+    SelectionSort_Rec(A,weights,values,i+1,totweight); // Recursive call
+}
+
+</script>
+
+<style>
+
+body { margin-left:10px; }
+ul  { list-style-type: none;padding:12px 0px; }
+ul  li {position:relative; border:1px solid gray; display:inline-block; width:120px; height:120px;
+text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;border-radius: 50%;background-color:lightgray}
+
+.target { color:red; background:white}
+
+.finished { background:lightyellow }
+
+ #arr0 , #arr1 { position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
+
+ #arr0 { color: blue; }
+ #arr1 { color: red; left:16px;}
+
+ label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
+
+ input[type=button] { margin-left:16px; padding:1px 12px; }
+
+ select  { font-size:1.1em; }
+ label { font-style: italic;  }
+
+ #OutDiv { margin-top:40px; }
+
+</style>
+</head>
+<body>
+<h1>Animation of Selection Sort and Insertion Sort Algorithms</h1>
+
+<label>Speed <select id="speedSelectList" >
+<option  value="2000" >slow</option>
+<option  value="600" >medium</option>
+<option  value="100" >fast</option>
+</select>
+</label>
+
+<label>Algorithm <select id="algorithmSelectList" >
+<option  value="0" >Selection Sort</option>
+<option  value="1" >Insertion Sort</option>
+</select>
+</label>
+
+<input type="button" value="Start"  onclick="ExecuteSort()" />
+
+<div  id="OutDiv" >
+</div>
+</body>
+</html>
