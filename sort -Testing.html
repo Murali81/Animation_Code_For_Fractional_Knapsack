@@ -12,9 +12,11 @@ var  A; // The array to be sorted
 var arr0 = "<span id='arr0' >curr&darr;</span>";
 var arr1 = "<span id='arr1' >max&darr;</span>";
 
-
+var totweight=120;
+var totvalue=0;
 var weights=[20,57,43,30,67,10];
 var values=[100,43,69,98,110,60];
+var Timer2;
 A=new Array(weights.length);
  //A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
 
@@ -44,7 +46,7 @@ A=new Array(weights.length);
       Timer1 = setInterval(AnimateSelectionSort,Speed);
    else
       Timer1 = setInterval(AnimateInsertionSort,Speed);
-
+  
 	  }
 
 function copyDiv()
@@ -81,6 +83,7 @@ function SelectionSort(A)
 
 function InsertionSort(A)
 {
+	//alert(":");
    for (var i = 1; i < A.length; i++)
    {
      var item = A[i];
@@ -92,7 +95,7 @@ function InsertionSort(A)
      {   if (UpdateTick())
          {  PrintArray(A,j+1,i,i);  return;  }
 
-         if (item >= A[j]) break;
+         if (item <= A[j]) break;
 
          A[j+1] = A[j];
          A[j] = item; // this is added for animation
@@ -138,31 +141,25 @@ function PrintArray(A, start,target, maxpos)
 }
 
 
-function PrintGREEDY(A, start,target)
+function PrintGREEDY(A,currpos)
 {  // This function renders the array A as an HTML list
 
    // alert(target);
-   var x =  "";
+  // alert(currpos);
+  var x =  "";
 
-   for(var i= 0; i < A.length ; i++)
-   {  var st = "";
-       if (i < start) st = " class ='finished'";
-
-       var ext ="";
-
-      if (i==start)
-      {  ext = arr0;  st = "style='background-color:white'";   }
-
-       if (i==target )
-      {    st  = "style='background-color:white'";  }
-
-      if  (i== totweight)
-      {  ext += arr1;   st = " style='background-color:white;border-color: red'";  }
-
-
-    //  x += "<li " + st + ">" + A[i] + ext+   "</li>";
-	       x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
-   }
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      var ext ="";
+     if  (i== currpos)
+     {
+       ext = arr1;   st = " style='background-color:white;border-color: green'";
+      // alert("current elemet");
+     }
+     if(i<currpos)
+      {st = " style='background-color:green;border-color: red'";  }
+     x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+  }
 
   var secondDivContent = document.getElementById('SortedElem');
 	secondDivContent.innerHTML = "<ul>"  + x + "</ul>";
@@ -191,15 +188,19 @@ function AnimateSelectionSort()
    TargetTick++;
 //   alert(TargetTick)
 }
+
 function AnimateKnapSack()
 {  // This function is executed repeatedly via SetInterval()
    // Note: TargetTick is incremented with every call to this function
-
+	//alert("hello");
    Tick=0;
+   sortedarr=A.sort(function(a, b){return b - a});
   // SelectionSort(A);
-    KnapSack_Rec(A,0) ;
+    KnapSack_Rec(sortedarr,weights,values,0,totweight) ;
    TargetTick++;
+  // alert(TargetTick);
 }
+
 
 
 
@@ -218,9 +219,20 @@ function AnimateInsertionSort()
 function EndAnimate()
 {  clearInterval(Timer1);
 	 copyDiv();
+	 TargetTick=1;
+//	 alert("ola");
+//var Timer1;
+//	Speed=40;
+	var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+	 Timer2 = setInterval(AnimateKnapSack,Speed);
+//	  alert("ola");
 	// PrintGREEDY(A,2);
 
   }
+function EndAnimate2()
+{  clearInterval(Timer2);
+
+  }  
 
 function UpdateTick()
 {  Tick++;
@@ -252,28 +264,32 @@ function SelectionSort_Rec(A,i)
     SelectionSort_Rec(A,i+1); // Recursive call
 }
 
-function KnapSack_Rec(A,i)
+function KnapSack_Rec(A,weights,values,i,totweight)
 {
-    if (i >= A.length-1)
+	//alert("knapsack");
+    if (i > A.length)
     {  // (i > A.length) last call to Printarray() to show array after final swap
-       PrintGREEDY(A,i+1,-1)
-       EndAnimate();
+      // PrintArray(A,i+1);
+       EndAnimate2();
        return;
     }
 
-    var max_pos=i ;
-    var max = A[i];
-    for(var j = i; j < A.length; j++)
-    {  if (A[j] < max )
-       {  max_pos= j; max =A[j]; }
-
-       if (UpdateTick()) { PrintGREEDY(A,i,j); return; }
+    var weight=weights[i];
+    var value=values[i];
+    if(weight<=totweight)
+    {
+          // alert(weight+" "+totweight);
+          totweight=totweight-weight;
+          if (UpdateTick()) { PrintGREEDY(A,i); return; }
+          // PrintArray(A,i);
     }
-
-    // swap A[i] with A[max_pos]
-    var t = A[i]; A[i] = A[max_pos]; A[max_pos] = t;
-
-    KnapSack_Rec(A,i+1); // Recursive call
+	else
+	{
+	      if (UpdateTick()) { PrintGREEDY(A,i); return; }
+		         EndAnimate2();
+       return;
+	}
+    KnapSack_Rec(A,weights,values,i+1,totweight); // Recursive call
 }
 
 
