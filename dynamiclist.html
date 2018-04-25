@@ -1,0 +1,458 @@
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<!-- <link rel="stylesheet" type="text/css" href="/css/result-light.css">-->  
+  <style type="text/css">
+    
+  </style>
+
+  <title></title>
+
+<script type = "text/javascript">
+
+var TargetTick;
+var Tick;
+var Timer1;
+var  A; // The array to be sorted
+
+var arr0 = "<span id='arr0' >curr&darr;</span>";
+var arr1 = "<span id='arr1' >max&darr;</span>";
+var arr2 = "<span id='arr2' >min&darr;</span>";
+
+var totweight=120;
+var totvalue=0;
+var Timer2;
+ //A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
+
+ function createfractions()
+ {
+	 for (var i = 0; i < weights.length; i++)
+	 {
+		A[i]=(values[i]/weights[i]).toFixed(2);;
+		//alert(A[i]);
+	 }
+ }
+
+ function ExecuteSort()
+{
+if (!EngineStart())
+	{return};
+//Clearing the secondDiv "SortedElem" since we are starting from beginning
+	var secondDivContent = document.getElementById('SortedElem');
+   secondDivContent.innerHTML ="";
+     var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+
+     var Alg = parseInt(algorithmSelectList.options[algorithmSelectList.selectedIndex].value);
+
+     TargetTick=1;
+    createfractions();
+   // Start animation
+   if (Timer1) clearInterval(Timer1);
+   if (Alg == 0)
+      Timer1 = setInterval(AnimateSelectionSort,Speed);
+   else
+      Timer1 = setInterval(AnimateInsertionSort,Speed);
+  
+	  }
+
+function copyDiv()
+{
+
+var firstDivContent = document.getElementById('OutDiv');
+var secondDivContent = document.getElementById('SortedElem');
+secondDivContent.innerHTML = firstDivContent.innerHTML;
+
+}
+
+
+function SelectionSort(A)
+{
+   for (var i = 0; i < A.length-1; i++)
+   {  var max_pos=i ;
+      var max = A[i];
+      for(var j = i; j < A.length; j++)
+      {   if (A[j] < max )
+          {  max_pos= j; max =A[j] }
+
+          if (UpdateTick()) { PrintArray(A,i,j,max_pos,0); return; }
+      }
+
+      // swap A[i] with A[max_pos]
+      var t = A[i]; A[i] = A[max_pos]; A[max_pos] = t;
+   }
+
+   // (i > A.length) last call to Printarray() to show array after final swap
+   PrintArray(A,i+1,-1,-1,0);
+   EndAnimate();
+}
+
+
+function InsertionSort(A)
+{
+	//alert(":");
+   for (var i = 1; i < A.length; i++)
+   {
+     var item = A[i];
+     var j = i-1;
+     //  find place for item
+     //  while( (j >= 0) && (item < A[j]))
+     //  for animation, we moved the test for 2nd cond to inside of loop
+     while ((j >= 0))
+     {   if (UpdateTick())
+         {  PrintArray(A,j+1,i,i,1);  return;  }
+
+         if (item <= A[j]) break;
+
+         A[j+1] = A[j];
+         A[j] = item; // this is added for animation
+         j--;
+      }
+
+      A[j+1] = item;
+   }
+
+   PrintArray(A,i+1,-1,-1,1);
+   EndAnimate();
+}
+
+
+function PrintArray(A, start,target, maxpos,algotype)
+{  // This function renders the array A as an HTML list
+
+   // alert(target);
+
+  var x =  "";
+
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      if (i < start) st = " class ='finished'";
+
+      var ext ="";
+
+     if (i==start)
+     {  ext = arr0;  st = "style='background-color:white'";   }
+
+      if (i==target )
+     {    st  = "style='background-color:white'";  }
+
+     if  (i== maxpos)
+     {
+		if(algotype==0)
+	 ext += arr1;   
+	 else
+	 {ext += arr2;}
+	 st = " style='background-color:white;border-color: red'"; 
+	 }
+
+
+    // x += "<li " + st + ">" + A[i] + ext+   "</li>";
+	      x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+  }
+
+   OutDiv.innerHTML =  "<ul>"  + x + "</ul>";
+}
+
+
+function PrintGREEDY(A,currpos)
+{  // This function renders the array A as an HTML list
+
+   // alert(target);
+  // alert(currpos);
+  var x =  "";
+
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      var ext ="";
+     if  (i== currpos)
+     {
+       ext = arr1;   st = " style='background-color:white;border-color: green'";
+      // alert("current elemet");
+     }
+     if(i<currpos)
+      {st = " style='background-color:green;border-color: red'";  }
+     x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+  }
+
+  var secondDivContent = document.getElementById('SortedElem');
+	secondDivContent.innerHTML = "<ul>"  + x + "</ul>";
+
+}
+
+
+
+// The pattern for AnimateSomeProcedure() is:
+
+//  Set TragetTick =1 (in caller)
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+// Note: Tick is incremented in UpateTick()
+
+function AnimateSelectionSort()
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function
+
+   Tick=0;
+  // SelectionSort(A);
+    SelectionSort_Rec(A,0) ;
+   TargetTick++;
+//   alert(TargetTick)
+}
+
+function AnimateKnapSack()
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function
+	//alert("hello");
+   Tick=0;
+   sortedarr=A.sort(function(a, b){return b - a});
+  // SelectionSort(A);
+    KnapSack_Rec(sortedarr,weights,values,0,totweight) ;
+   TargetTick++;
+  // alert(TargetTick);
+}
+
+
+
+
+
+
+function AnimateInsertionSort()
+{ // This function is executed repeatedly via SetInterval()
+  // Note: TargetTick is incremented with every call to this function
+
+  B = A.slice(); // Start from an original copy of A
+  Tick=0;
+  InsertionSort(B);
+  TargetTick++;
+}
+
+function EndAnimate()
+{  clearInterval(Timer1);
+	 copyDiv();
+	 TargetTick=1;
+//	 alert("ola");
+//var Timer1;
+//	Speed=40;
+	var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+	 Timer2 = setInterval(AnimateKnapSack,Speed);
+//	  alert("ola");
+	// PrintGREEDY(A,2);
+
+  }
+function EndAnimate2()
+{  clearInterval(Timer2);
+
+  }  
+
+function UpdateTick()
+{  Tick++;
+   return (Tick == TargetTick);
+}
+
+
+function SelectionSort_Rec(A,i)
+{
+    if (i >= A.length-1)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+       PrintArray(A,i+1,-1,-1,0);
+       EndAnimate();
+       return;
+    }
+
+    var max_pos=i ;
+    var max = A[i];
+    for(var j = i; j < A.length; j++)
+    {  if (A[j] > max )
+       {  max_pos= j; max =A[j]; }
+
+       if (UpdateTick()) { PrintArray(A,i,j,max_pos,0); return; }
+    }
+
+    // swap A[i] with A[max_pos]
+    var t = A[i]; A[i] = A[max_pos]; A[max_pos] = t;
+
+    SelectionSort_Rec(A,i+1); // Recursive call
+}
+
+function KnapSack_Rec(A,weights,values,i,totweight)
+{
+	//alert("knapsack");
+    if (i > A.length)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+      // PrintArray(A,i+1);
+       EndAnimate2();
+       return;
+    }
+
+    var weight=weights[i];
+    var value=values[i];
+    if(weight<=totweight)
+    {
+          // alert(weight+" "+totweight);
+          totweight=totweight-weight;
+		  totvalue=totvalue+value;
+          if (UpdateTick()) { PrintGREEDY(A,i); return; }
+          // PrintArray(A,i);
+    }
+	else
+	{
+	      if (UpdateTick()) { PrintGREEDY(A,i); return; }
+		         EndAnimate2();
+       return;
+	}
+    KnapSack_Rec(A,weights,values,i+1,totweight); // Recursive call
+}
+
+
+var values;
+var weights;
+function addNewMenuElement(i) {	
+ 
+        $("#ulMenueElementeHinzufuegen").append($("<li >").append($("<input/>", {
+            type: "number",
+            id: "weight" + i.toString(),
+            name: "weight" + i.toString(),
+			style:"margin-top:20px;width:40px",
+			placeholder:"Wt."
+        })).append("<br>").append($("<input/>", {
+            type: "number",
+            id: "value" + i.toString(),
+            name: "value" + i.toString(),
+			style:"margin-top:20px;width:40px",
+			placeholder:"Val."
+        })));
+
+     
+}
+function addboxes()
+{
+	clearContent();
+    var x = $('#hfCountMenueElemente').val();
+	weights=new Array(x);
+	values=new Array(x);
+	A=new Array(x);
+
+	var j;
+for(j=0;j<x;j++)
+{
+addNewMenuElement(j);
+}
+//getvalues(x);
+}
+
+function getvalues(x)
+{
+for(j=0;j<x;j++)
+{
+var elem = $('#weight'+j).val();
+if (elem=='')
+{
+alert("null alert");
+break;
+}
+alert(elem);
+}
+}
+
+
+function clearContent()
+{
+
+var EntryDivContent = document.getElementById('EntryDiv');
+EntryDivContent.innerHTML ="<ul id='ulMenueElementeHinzufuegen'></ul>";
+var secondDivContent = document.getElementById('SortedElem');
+secondDivContent.innerHTML ="";
+var firstDivContent = document.getElementById('OutDiv');
+firstDivContent.innerHTML ="";
+
+}
+
+function EngineStart()
+{
+var x = $('#hfCountMenueElemente').val();
+for(j=0;j<x;j++)
+{
+//alert("weight");
+var weight = $('#weight'+j).val();
+if(weight=="")
+{
+alert("Details are not entered");
+return false;
+}
+//alert(weight);
+var value = $('#value'+j).val();
+//alert(value);
+weights[j]=weight;
+values[j]=value;
+}
+
+}
+</script>
+<style>
+
+body { margin-left:10px; }
+ul  { list-style-type: none;padding:12px 0px; }
+ul  li {position:relative; border:1px solid gray; display:inline-block; width:120px; height:120px;
+text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;border-radius: 50%;background-color:lightgray}
+
+
+.target { color:red; background:white}
+
+.finished { background:lightyellow }
+.placed { background:blue }
+
+ #arr0 , #arr1 ,#arr2{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
+
+ #arr0 { color: blue; }
+ #arr1 { color: red; left:16px;}
+ #arr2 { color: red; left:16px;}
+
+ label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
+
+ input[type=button] { margin-left:16px; padding:1px 12px; }
+
+ select  { font-size:1.1em; }
+ label { font-style: italic;  }
+
+ #OutDiv { margin-top:40px; }
+
+</style>
+  
+</head>
+
+<body style="">
+  <input  id="hfCountMenueElemente" name="hfCountMenueElemente" type="number" />
+<button onclick="addboxes()">Add</button>
+<div  id="EntryDiv" >
+<ul id="ulMenueElementeHinzufuegen"></ul>
+</div>
+<label>Speed <select id="speedSelectList" >
+<option  value="2000" >slow</option>
+<option  value="600" >medium</option>
+<option  value="20" >fast</option>
+</select>
+</label>
+
+<label>Algorithm <select id="algorithmSelectList" >
+<option  value="0" >Selection Sort</option>
+<option  value="1" >Insertion Sort</option>
+</select>
+</label>
+
+<input type="button" value="Start"  onclick="ExecuteSort()" />
+
+<div  id="OutDiv" >
+</div>
+
+
+<div  id="SortedElem">
+</div>
+
+
+
+</body></html>
