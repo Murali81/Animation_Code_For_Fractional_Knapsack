@@ -1,0 +1,103 @@
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+  
+
+  
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+  
+
+  
+    
+      <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    
+  
+    
+      <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    
+  
+      
+
+  <style type="text/css">
+    #nonSelected{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 200px;
+    background-color: #993333;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: black;
+    padding: 10px;
+}
+
+#selected{
+    position: absolute;
+    top: 10px;
+    left: 220px;
+    width: 200px;
+    height: 200px;
+    background-color: #339933;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: black;
+    padding: 10px;
+}
+  </style>
+
+  <title>Moving Elements between divs by Pixic</title>
+
+  
+</head>
+
+<body>
+  <div id="nonSelected">
+
+    <!-- TWO INPUT TAGS --> 
+    <input id="btnDefault" onclick="moveButton(this)" type="button" class="btn btn-default" value="Default">
+    <input id="btnPrimary" onclick="moveButton(this)" type="button" class="btn btn-primary" value="Primary">
+    
+    <!-- THREE BUTTON TAGS -->
+    <button id="btnDanger" onclick="moveButton(this)" type="button" class="btn btn-danger">Danger</button>
+    <button id="btnWarning" onclick="moveButton(this)" type="button" class="btn btn-warning">Warning</button>
+    <button id="btnSuccess" onclick="moveButton(this)" type="button" class="btn btn-success">Success</button>
+
+</div>
+
+
+<div id="selected">
+
+</div>
+
+<script type="text/javascript">
+
+
+function moveButton(elem){
+    if( $(elem).parent().attr("id") == "nonSelected" ){
+        $(elem).detach().appendTo('#selected');
+    }
+    else{
+        $(elem).detach().appendTo('#nonSelected'); 
+    }
+}
+
+
+
+
+
+
+</script>
+
+
+
+
+
+</body></html>
