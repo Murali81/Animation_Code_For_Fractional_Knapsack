@@ -21,6 +21,7 @@ var  A; // The array to be sorted
 var arr0 = "<span id='arr0' >curr&darr;</span>";
 var arr1 = "<span id='arr1' >max&darr;</span>";
 var arr2 = "<span id='arr2' >min&darr;</span>";
+var arr3 = "<span id='arr3' >&#10004;</span>";
 
 var totweight=120;
 var totvalue=0;
@@ -40,6 +41,7 @@ var Timer2;
 {
 if (!EngineStart())
 	{return};
+	//alert("da");
 //Clearing the secondDiv "SortedElem" since we are starting from beginning
 	var secondDivContent = document.getElementById('SortedElem');
    secondDivContent.innerHTML ="";
@@ -168,11 +170,11 @@ function PrintGREEDY(A,currpos)
       var ext ="";
      if  (i== currpos)
      {
-       ext = arr1;   st = " style='background-color:white;border-color: green'";
+          st = " style='background-color:white;border-color: green'";
       // alert("current elemet");
      }
      if(i<currpos)
-      {st = " style='background-color:green;border-color: red'";  }
+      {st = " style='background-color:white;border-color: green'";ext  = arr3;  }
      x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
   }
 
@@ -390,7 +392,7 @@ var value = $('#value'+j).val();
 weights[j]=weight;
 values[j]=value;
 }
-
+return true;
 }
 </script>
 <style>
@@ -406,12 +408,12 @@ text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;bord
 .finished { background:lightyellow }
 .placed { background:blue }
 
- #arr0 , #arr1 ,#arr2{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
+ #arr0 , #arr1 ,#arr2,#arr3{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
 
  #arr0 { color: blue; }
  #arr1 { color: red; left:16px;}
  #arr2 { color: red; left:16px;}
-
+ #arr3 { color: green;left:45px; }
  label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
 
  input[type=button] { margin-left:16px; padding:1px 12px; }
