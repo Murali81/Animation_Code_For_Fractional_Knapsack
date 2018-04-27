@@ -3,10 +3,51 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="googlebot" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<!-- <link rel="stylesheet" type="text/css" href="/css/result-light.css">-->  
+<script src="jquery/1.10.1/jquery.min.js"></script>
+<!-- <link rel="stylesheet" type="text/css" href="/css/result-light.css">-->
+
+
+          <link rel="stylesheet" type="text/css" href="bootstrap/3.0.3/css/bootstrap.min.css">
+
+
+
+      <script type="text/javascript" src="bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+
+
+
   <style type="text/css">
-    
+    #nonSelected{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 200px;
+    background-color: #993333;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: black;
+    padding: 10px;
+}
+
+#selected{
+    position: relative;
+    top: 10px;
+    left: 220px;
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    border-width: 0px 1px 1px 1px;
+    border-style: dotted;
+    border-color: black;
+    padding: 10px;
+
+}
+  </style>
+
+
+  <style type="text/css">
+
   </style>
 
   <title></title>
@@ -21,10 +62,12 @@ var  A; // The array to be sorted
 var arr0 = "<span id='arr0' >curr&darr;</span>";
 var arr1 = "<span id='arr1' >max&darr;</span>";
 var arr2 = "<span id='arr2' >min&darr;</span>";
+var arr3 = "<span id='arr3' >&#10004;</span>";
 
 var totweight=120;
 var totvalue=0;
 var Timer2;
+var RemainingWeight=0;
  //A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
 
  function createfractions()
@@ -40,6 +83,9 @@ var Timer2;
 {
 if (!EngineStart())
 	{return};
+  var BucketContent = document.getElementById('selected');
+  BucketContent.innerHTML ="";
+	//alert("da");
 //Clearing the secondDiv "SortedElem" since we are starting from beginning
 	var secondDivContent = document.getElementById('SortedElem');
    secondDivContent.innerHTML ="";
@@ -55,7 +101,7 @@ if (!EngineStart())
       Timer1 = setInterval(AnimateSelectionSort,Speed);
    else
       Timer1 = setInterval(AnimateInsertionSort,Speed);
-  
+
 	  }
 
 function copyDiv()
@@ -141,10 +187,10 @@ function PrintArray(A, start,target, maxpos,algotype)
      if  (i== maxpos)
      {
 		if(algotype==0)
-	 ext += arr1;   
+	 ext += arr1;
 	 else
 	 {ext += arr2;}
-	 st = " style='background-color:white;border-color: red'"; 
+	 st = " style='background-color:white;border-color: red'";
 	 }
 
 
@@ -168,17 +214,18 @@ function PrintGREEDY(A,currpos)
       var ext ="";
      if  (i== currpos)
      {
-       ext = arr1;   st = " style='background-color:white;border-color: green'";
+          st = " style='background-color:white;border-color: green'";
       // alert("current elemet");
      }
-     if(i<currpos)
-      {st = " style='background-color:green;border-color: red'";  }
-     x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+     if(i<currpos){st="style='display:None;background-color:white;border-color: green'";ext=arr3;}
+   //   {st = " style='background-color:white;border-color: green'";ext  = arr3;  }
+     x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
   }
 
   var secondDivContent = document.getElementById('SortedElem');
 	secondDivContent.innerHTML = "<ul>"  + x + "</ul>";
-
+  //if(currpos==0){alert("Found 0");}
+	pushitems(currpos);
 }
 
 
@@ -211,7 +258,8 @@ function AnimateKnapSack()
    Tick=0;
    sortedarr=A.sort(function(a, b){return b - a});
   // SelectionSort(A);
-    KnapSack_Rec(sortedarr,weights,values,0,totweight) ;
+
+    KnapSack_Rec(sortedarr,weights,values,0,totweight,0) ;
    TargetTick++;
   // alert(TargetTick);
 }
@@ -234,12 +282,15 @@ function AnimateInsertionSort()
 function EndAnimate()
 {  clearInterval(Timer1);
 	 copyDiv();
+
 	 TargetTick=1;
 //	 alert("ola");
 //var Timer1;
 //	Speed=40;
+iterlistelems();
 	var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
 	 Timer2 = setInterval(AnimateKnapSack,Speed);
+
 //	  alert("ola");
 	// PrintGREEDY(A,2);
 
@@ -247,7 +298,8 @@ function EndAnimate()
 function EndAnimate2()
 {  clearInterval(Timer2);
 
-  }  
+//pushelems();
+  }
 
 function UpdateTick()
 {  Tick++;
@@ -279,9 +331,10 @@ function SelectionSort_Rec(A,i)
     SelectionSort_Rec(A,i+1); // Recursive call
 }
 
-function KnapSack_Rec(A,weights,values,i,totweight)
+function KnapSack_Rec(A,weights,values,i,totweight1,totvalue)
 {
 	//alert("knapsack");
+
     if (i > A.length)
     {  // (i > A.length) last call to Printarray() to show array after final swap
       // PrintArray(A,i+1);
@@ -291,43 +344,50 @@ function KnapSack_Rec(A,weights,values,i,totweight)
 
     var weight=weights[i];
     var value=values[i];
-    if(weight<=totweight)
+    if(weight<=totweight1)
     {
           // alert(weight+" "+totweight);
-          totweight=totweight-weight;
-		  totvalue=totvalue+value;
-          if (UpdateTick()) { PrintGREEDY(A,i); return; }
+          totweight1=totweight1-weight;
+		  totvalue=totvalue+Number(value);
+  //   alert("Totvalue is "+totvalue);
+  //        alert("Totweight1 is "+totweight1);
+          if (UpdateTick()) {PrintGREEDY(A,i); return; }
           // PrintArray(A,i);
     }
 	else
 	{
+    //alert("Remaining weight is "+totweight);
+    RemainingWeight=totweight1;
+    var fractionalvalue=(RemainingWeight/totweight)*value;
+//alert("fractionalvalue is "+fractionalvalue+"totvalue is "+totvalue+" "+totweight);
 	      if (UpdateTick()) { PrintGREEDY(A,i); return; }
+        //  newpushitems(i);
 		         EndAnimate2();
        return;
 	}
-    KnapSack_Rec(A,weights,values,i+1,totweight); // Recursive call
+    KnapSack_Rec(A,weights,values,i+1,totweight1,totvalue); // Recursive call
 }
 
 
 var values;
 var weights;
-function addNewMenuElement(i) {	
- 
+function addNewMenuElement(i) {
+
         $("#ulMenueElementeHinzufuegen").append($("<li >").append($("<input/>", {
             type: "number",
             id: "weight" + i.toString(),
             name: "weight" + i.toString(),
-			style:"margin-top:20px;width:40px",
+			style:"margin-top:15px;width:40px",
 			placeholder:"Wt."
         })).append("<br>").append($("<input/>", {
             type: "number",
             id: "value" + i.toString(),
             name: "value" + i.toString(),
-			style:"margin-top:20px;width:40px",
+			style:"margin-top:10px;width:40px",
 			placeholder:"Val."
         })));
 
-     
+
 }
 function addboxes()
 {
@@ -336,7 +396,6 @@ function addboxes()
 	weights=new Array(x);
 	values=new Array(x);
 	A=new Array(x);
-
 	var j;
 for(j=0;j<x;j++)
 {
@@ -355,7 +414,7 @@ if (elem=='')
 alert("null alert");
 break;
 }
-alert(elem);
+//alert(elem);
 }
 }
 
@@ -369,6 +428,8 @@ var secondDivContent = document.getElementById('SortedElem');
 secondDivContent.innerHTML ="";
 var firstDivContent = document.getElementById('OutDiv');
 firstDivContent.innerHTML ="";
+var BucketContent = document.getElementById('selected');
+BucketContent.innerHTML ="";
 
 }
 
@@ -390,8 +451,71 @@ var value = $('#value'+j).val();
 weights[j]=weight;
 values[j]=value;
 }
-
+return true;
 }
+
+function moveELEM(elem){
+	//alert(elem);
+	//alert($(elem).val());
+//	alert($(elem).parent().parent().attr("id"));
+	var ee=$(elem).attr('id');
+	//alert(ee);
+  $(elem).css('display','inline-block');
+    if( $(elem).parent().parent().attr("id") == "SortedElem" ){
+        $(elem).detach().appendTo('#selected');
+    }
+    else{
+        $(elem).detach().appendTo('#SortedElem');
+    }
+}
+
+function pushelems()
+{
+var listItems = $("#SortedElem li");
+listItems.each(function(idx, li) {
+    var product = $(li);
+
+	 $("#selected").animate(moveELEM(product)).delay("slow");
+});
+}
+
+function iterlistelems()
+{
+//alert("caleled");
+var listItems = $("#SortedElem li");
+var elemcount=0;
+listItems.each(function(idx, li) {
+	elemcount+=1;
+    var product = $(li);
+	product.attr('id','element'+elemcount);
+	 //$("#SortedElem").animate(moveELEM(product));
+    // and the rest of your code
+});
+}
+
+
+
+
+
+function pushitems(pos)
+{
+//if( pos>0){alert("0th index");pos=pos-1;}
+pos=pos-1;
+var listItems = $("#SortedElem li");
+var elemcounter=0;
+//alert("hel");
+listItems.each(function(idx, li) {
+
+    var product = $(li);
+	//product.attr('id','element'+elemcount);
+
+	 if(elemcounter==pos)
+{		$("#SortedElem").animate(moveELEM(product));}
+    // and the rest of your code
+elemcounter+=1;
+	});
+}
+
 </script>
 <style>
 
@@ -406,12 +530,12 @@ text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;bord
 .finished { background:lightyellow }
 .placed { background:blue }
 
- #arr0 , #arr1 ,#arr2{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
+ #arr0 , #arr1 ,#arr2,#arr3{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
 
  #arr0 { color: blue; }
  #arr1 { color: red; left:16px;}
  #arr2 { color: red; left:16px;}
-
+ #arr3 { color: green;left:45px; }
  label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
 
  input[type=button] { margin-left:16px; padding:1px 12px; }
@@ -422,7 +546,7 @@ text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;bord
  #OutDiv { margin-top:40px; }
 
 </style>
-  
+
 </head>
 
 <body style="">
@@ -453,6 +577,9 @@ text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;bord
 <div  id="SortedElem">
 </div>
 
+<ul id="selected">
+
+</div>
 
 
 </body></html>
