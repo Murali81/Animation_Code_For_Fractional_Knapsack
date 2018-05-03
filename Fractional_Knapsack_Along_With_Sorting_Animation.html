@@ -1,0 +1,694 @@
+<html><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="jquery/1.10.1/jquery.min.js"></script>
+  <!-- <link rel="stylesheet" type="text/css" href="/css/result-light.css">-->
+
+
+    <link rel="stylesheet" type="text/css" href="bootstrap/3.0.3/css/bootstrap.min.css">
+    <script type="text/javascript" src="bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+
+
+
+  <style type="text/css">
+    #nonSelected{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 200px;
+    background-color: #993333;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: black;
+    padding: 10px;
+}
+
+#selected{
+    position: relative;
+    top: 10px;
+    left: 220px;
+    width: 200px;
+    min-height: 300px;
+    height: auto;
+    background-color: white;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: black;
+    padding: 10px;
+    margin-bottom: 5%;
+}
+  </style>
+
+
+  <style type="text/css">
+
+  </style>
+
+  <title></title>
+
+<script type = "text/javascript">
+
+var TargetTick;
+var Tick;
+var Timer1;
+var  A; // The array to be sorted
+
+var arr0 = "<span id='arr0' >curr&darr;</span>";
+var arr1 = "<span id='arr1' >max&darr;</span>";
+var arr2 = "<span id='arr2' >min&darr;</span>";
+var arr3 = "<span id='arr3' >&#10004;</span>";
+
+
+
+var finaltotvalue=0;
+var Timer2;
+var RemainingWeight=0;
+ //A = [79,56,19,44,86,22,41,35,39,99,16,53,29,26,11,49,65,33,51,83];
+
+ function createfractions()
+ {
+	 for (var i = 0; i < weights.length; i++)
+	 {
+		A[i]=(values[i]/weights[i]).toFixed(2);;
+		//alert(A[i]);
+	 }
+ }
+
+ function ExecuteSort()
+{
+if (!EngineStart())
+	{return};
+  var BucketContent = document.getElementById('selected');
+  BucketContent.innerHTML ="";
+  var valuesContent = document.getElementById('values');
+valuesContent.innerHTML ="";
+	//alert("da");
+//Clearing the secondDiv "SortedElem" since we are starting from beginning
+	var secondDivContent = document.getElementById('SortedElem');
+   secondDivContent.innerHTML ="";
+     var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+
+     var Alg = parseInt(algorithmSelectList.options[algorithmSelectList.selectedIndex].value);
+
+     TargetTick=1;
+    createfractions();
+   // Start animation
+   if (Timer1) clearInterval(Timer1);
+   if (Alg == 0)
+      Timer1 = setInterval(AnimateSelectionSort,Speed);
+   else
+      Timer1 = setInterval(AnimateInsertionSort,Speed);
+
+	  }
+
+function copyDiv()
+{
+
+var firstDivContent = document.getElementById('OutDiv');
+var secondDivContent = document.getElementById('SortedElem');
+secondDivContent.innerHTML = firstDivContent.innerHTML;
+
+}
+
+
+function SelectionSort(A)
+{
+   for (var i = 0; i < A.length-1; i++)
+   {  var max_pos=i ;
+      var max = A[i];
+      for(var j = i; j < A.length; j++)
+      {   if (A[j] < max )
+          {  max_pos= j; max =A[j] }
+
+          if (UpdateTick()) { PrintArray(A,i,j,max_pos,0); return; }
+      }
+
+      // swap A[i] with A[max_pos]
+      var t = A[i]; A[i] = A[max_pos]; A[max_pos] = t;
+   }
+
+   // (i > A.length) last call to Printarray() to show array after final swap
+   PrintArray(A,i+1,-1,-1,0);
+   EndAnimate();
+}
+
+
+function InsertionSort(A)
+{
+	//alert(":");
+   for (var i = 1; i < A.length; i++)
+   {
+     var item = A[i];
+     var j = i-1;
+     //  find place for item
+     //  while( (j >= 0) && (item < A[j]))
+     //  for animation, we moved the test for 2nd cond to inside of loop
+     while ((j >= 0))
+     {   if (UpdateTick())
+         {  PrintArray(A,j+1,i,i,1);  return;  }
+
+         if (item <= A[j]) break;
+
+         A[j+1] = A[j];
+         A[j] = item; // this is added for animation
+         j--;
+      }
+
+      A[j+1] = item;
+   }
+
+   PrintArray(A,i+1,-1,-1,1);
+   EndAnimate();
+}
+
+
+function PrintArray(A, start,target, maxpos,algotype)
+{  // This function renders the array A as an HTML list
+
+   // alert(target);
+
+  var x =  "";
+
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      if (i < start) st = " class ='finished'";
+
+      var ext ="";
+
+     if (i==start)
+     {  ext = arr0;  st = "style='background-color:white'";   }
+
+      if (i==target )
+     {    st  = "style='background-color:white'";  }
+
+     if  (i== maxpos)
+     {
+		if(algotype==0)
+	 ext += arr1;
+	 else
+	 {ext += arr2;}
+	 st = " style='background-color:white;border-color: red'";
+	 }
+
+
+    // x += "<li " + st + ">" + A[i] + ext+   "</li>";
+	      x += "<li " + st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+  }
+
+   OutDiv.innerHTML =  "<ul>"  + x + "</ul>";
+}
+
+
+function PrintGREEDY(A,currpos,currweight,currval,lastpos=-1)
+{  // This function renders the array A as an HTML list
+
+   // alert(target);
+  // alert(currpos);
+  var pushflag=1;
+  var x =  "";
+	console.log(currpos,"Called gredy");
+  for(var i= 0; i < A.length ; i++)
+  {  var st = "";
+      var ext ="";
+	  var optionalpart="";
+		if(lastpos==i)
+		{
+		if(RemainingWeight==0)
+		{
+		  st = " style='background-color:white;border-color: green'";
+		x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";    
+		pushflag=0;
+		}
+		else{
+		st="style='background-color:red;border-color: green'";ext="";
+		optionalpart=" - "+RemainingWeight;		
+		x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+optionalpart+".kg "+"<br>"+"val."+(((weights[i]-RemainingWeight)/weights[i])*values[i]).toFixed(2);+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+		
+		}
+		}
+     else if  (i== currpos)
+     {
+          st = " style='background-color:white;border-color: green'";
+x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";    
+	// alert("current elemet");
+     }
+	 
+	 
+     else if(i<currpos)
+	 {
+	 st="style='display:None;background-color:white;border-color: green'";ext=arr3;
+	x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+	  }
+	  
+	  else
+	  {
+	  st = " style='background-color:white;border-color: green'";
+	x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";    
+
+	  }
+			
+			
+   //   {st = " style='background-color:white;border-color: green'";ext  = arr3;  }
+    // x += "<li "+" id = element"+i+ "; "+st + ">" + weights[i]+".kg <br>"+"val."+values[i]+"<br>"+values[i]+"/"+weights[i]+"="+A[i] + ext+   "</li>";
+	
+	
+  }
+	
+
+	
+	
+  var secondDivContent = document.getElementById('SortedElem');
+	secondDivContent.innerHTML = "<ul>"  + x + "</ul>";
+  //if(currpos==0){alert("Found 0");}
+    console.log(currpos+" currpos");
+	if(pushflag==1)
+{	pushitems(currpos,currweight,currval,lastpos);}
+}
+
+
+
+// The pattern for AnimateSomeProcedure() is:
+
+//  Set TragetTick =1 (in caller)
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+//  Increment TargetTick
+//  Execute the procedure to be animated from start (Tick=0)  till (Tick=TragetTick)
+// Note: Tick is incremented in UpateTick()
+
+function AnimateSelectionSort()
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function
+
+   Tick=0;
+  // SelectionSort(A);
+   SelectionSort_Rec(A,0);
+   TargetTick++;
+//   alert(TargetTick)
+}
+
+function AnimateKnapSack()
+{  // This function is executed repeatedly via SetInterval()
+   // Note: TargetTick is incremented with every call to this function
+	//alert("hello");
+   Tick=0;
+   var totweight=parseInt(document.getElementById("knapsackWeight").value);
+   sortedarr=A.sort(function(a, b){return b - a});
+  // SelectionSort(A);
+
+    KnapSack_Rec(sortedarr,weights,values,0,totweight,0) ;
+   TargetTick++;
+  // alert(TargetTick);
+}
+
+
+
+
+
+
+function AnimateInsertionSort()
+{ // This function is executed repeatedly via SetInterval()
+  // Note: TargetTick is incremented with every call to this function
+
+  B = A.slice(); // Start from an original copy of A
+  Tick=0;
+  InsertionSort(B);
+  TargetTick++;
+}
+
+function EndAnimate()
+{  clearInterval(Timer1);
+	 copyDiv();
+
+	 TargetTick=1;
+//	 alert("ola");
+//var Timer1;
+//	Speed=40;
+iterlistelems();
+	var Speed = parseInt(speedSelectList.options[speedSelectList.selectedIndex].value);
+	 Timer2 = setInterval(AnimateKnapSack,Speed);
+
+//	  alert("ola");
+	// PrintGREEDY(A,2);
+
+  }
+function EndAnimate2()
+{  
+    clearInterval(Timer2);
+    //pushelems();
+}
+
+function UpdateTick()
+{  Tick++;
+   return (Tick == TargetTick);
+}
+
+function SelectionSort_Rec(A,i)
+{
+    if (i >= A.length-1)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+       PrintArray(A,i+1,-1,-1,0);
+       EndAnimate();
+       return;
+    }
+
+    var max_pos=i ;
+    var max = A[i];
+    for(var j = i; j < A.length; j++)
+    {  if (A[j] > max )
+       {  max_pos= j; max =A[j]; }
+
+       if (UpdateTick()) { PrintArray(A,i,j,max_pos,0); return; }
+    }
+
+    // swap A[i] with A[max_pos]
+    var t = A[i]; A[i] = A[max_pos]; A[max_pos] = t;
+	var w=weights[i];weights[i]=weights[max_pos];weights[max_pos]=w;
+		var v=values[i];values[i]=values[max_pos];values[max_pos]=v;
+
+    SelectionSort_Rec(A,i+1); // Recursive call
+}
+var x = 0;
+function KnapSack_Rec(A,weights,values,i,totweight1,totvalue)
+{
+
+	//alert("knapsack");
+    var totweight=parseInt(document.getElementById("knapsackWeight").value);
+	
+
+	if (i >= A.length)
+    {  // (i > A.length) last call to Printarray() to show array after final swap
+      // PrintArray(A,i+1);
+	  console.log("Exceeded");
+	  finaltotvalue=totvalue;
+      if (UpdateTick()) {console.log("End cond.");PrintGREEDY(A,i,totweight1,totvalue);return;} 
+	  if (UpdateTick()) {console.log("End cond. 2.0");PrintGREEDY(A,i+1,totweight1,totvalue);return;} 
+       EndAnimate2();
+       return;
+    }
+	
+    var weight=weights[i];
+    var value=values[i];
+	
+    if(weight<=totweight1)
+    {
+          // alert(weight+" "+totweight);
+          totweight1=totweight1-weight;
+          totvalue=totvalue+Number(value);
+          
+     //alert("Totvalue is "+totvalue);
+  //        alert("Totweight1 is "+totweight1);
+            if(x == 0)
+            {
+                console.log('totvalu is ', totvalue);
+                x = 1;
+            }
+          if (
+              
+              UpdateTick()) {PrintGREEDY(A,i,totweight1,totvalue); 
+                console.log('totvalu is ', totvalue);
+                return; 
+                
+            }
+          // PrintArray(A,i);
+    }
+	else
+	{
+    //alert("Remaining weight is "+totweight);
+    RemainingWeight=totweight1;
+	totweight1=0;
+    var fractionalvalue=(RemainingWeight/weight)*value;
+//alert("fractionalvalue is "+fractionalvalue+"totvalue is "+totvalue+" "+totweight);
+    totvalue += fractionalvalue;
+    finaltotvalue=totvalue;
+  //  alert("fractionalvalue is "+fractionalvalue+"totvalue is "+totvalue+" "+totweight);
+    console.log("ELS");
+          if (UpdateTick()) { PrintGREEDY(A,i,totweight1,totvalue); 
+            console.log('ELSE cond totvalu is ', totvalue);
+//            return;
+            PrintGREEDY(A,i+1,totweight1,totvalue,i); 
+            console.log('ELSE cond totvalu is ', totvalue);
+            return;
+             }
+        //  newpushitems(i);
+		    EndAnimate2();
+       return;
+    }
+    
+    KnapSack_Rec(A,weights,values,i+1,totweight1,totvalue); // Recursive call
+}
+
+
+var values;
+var weights;
+function addNewMenuElement(i) {
+
+        $("#ulMenueElementeHinzufuegen").append($("<li >").append($("<input/>", {
+            type: "number",
+            id: "weight" + i.toString(),
+            name: "weight" + i.toString(),
+			style:"margin-top:15px;width:60px; height: 30px; ",
+			placeholder:"Wt."
+        })).append("<br>").append($("<input/>", {
+            type: "number",
+            id: "value" + i.toString(),
+            name: "value" + i.toString(),
+			style:"margin-top:10px;width:60px; height: 30px;",
+			placeholder:"Val."
+        })));
+
+
+}
+function addboxes()
+{
+	clearContent();
+    var x = $('#hfCountMenueElemente').val();
+	weights=new Array(x);
+	values=new Array(x);
+	A=new Array(x);
+	var j;
+for(j=0;j<x;j++)
+{
+addNewMenuElement(j);
+}
+//getvalues(x);
+}
+
+function getvalues(x)
+{
+for(j=0;j<x;j++)
+{
+var elem = $('#weight'+j).val();
+if (elem=='')
+{
+alert("null alert");
+break;
+}
+//alert(elem);
+}
+}
+
+
+function clearContent()
+{
+
+var EntryDivContent = document.getElementById('EntryDiv');
+EntryDivContent.innerHTML ="<ul id='ulMenueElementeHinzufuegen'></ul>";
+var secondDivContent = document.getElementById('SortedElem');
+secondDivContent.innerHTML ="";
+var firstDivContent = document.getElementById('OutDiv');
+firstDivContent.innerHTML ="";
+var BucketContent = document.getElementById('selected');
+BucketContent.innerHTML ="";
+var BucketContent = document.getElementById('values');
+BucketContent.innerHTML ="";
+
+}
+
+function EngineStart()
+{
+var x = $('#hfCountMenueElemente').val();
+for(j=0;j<x;j++)
+{
+//alert("weight");
+var weight = $('#weight'+j).val();
+if(weight=="")
+{
+alert("Details are not entered");
+return false;
+}
+//alert(weight);
+var value = $('#value'+j).val();
+//alert(value);
+if(value=="")
+{
+alert("Details are not entered");
+return false;
+}
+weights[j]=weight;
+values[j]=value;
+}
+return true;
+}
+
+function moveELEM(elem,currweit,currval,pos,lastpos){
+	//alert(elem);
+	//alert($(elem).val());
+//	alert($(elem).parent().parent().attr("id"));
+	var ee=$(elem).attr('id');
+	console.log(ee);
+  $(elem).css('display','inline-block');
+    if( $(elem).parent().parent().attr("id") == "SortedElem" ){
+	
+//		console.log();
+		if(lastpos!=-1)
+		{
+		console.log("ERROR is ",+((RemainingWeight/weights[pos])*values[pos]));
+    $(elem).clone().prop('id',"new"+ee).html(RemainingWeight+" kg.<br>"+"val."+((RemainingWeight/weights[pos])*values[pos]).toFixed(2)).appendTo('#selected');
+	}
+	else
+	{
+	        $(elem).clone().prop('id',"new"+ee).appendTo('#selected');
+
+	}
+		
+		var valuesdiv = $("#values");
+		valuesdiv.text(currweit+" | "+(currval.toFixed(2)));
+    }
+    else{
+        $(elem).detach().appendTo('#SortedElem');
+    }
+	
+}
+
+function pushelems()
+{
+var listItems = $("#SortedElem li");
+listItems.each(function(idx, li) {
+    var product = $(li);
+
+	 $("#selected").animate(moveELEM(product)).delay("slow");
+});
+}
+
+function iterlistelems()
+{
+//alert("caleled");
+var listItems = $("#SortedElem li");
+var elemcount=0;
+listItems.each(function(idx, li) {
+	elemcount+=1;
+    var product = $(li);
+	product.attr('id','element'+elemcount);
+	 //$("#SortedElem").animate(moveELEM(product));
+    // and the rest of your code
+});
+}
+
+
+
+
+
+function pushitems(pos,currweit,currval,lastpos=-1)
+{
+//if( pos>0){alert("0th index");pos=pos-1;}
+pos=pos-1;
+var listItems = $("#SortedElem li");
+var elemcounter=0;
+//alert("hel");
+listItems.each(function(idx, li) {
+	
+    var product = $(li);
+	//product.attr('id','element'+elemcount);
+
+	 if(elemcounter==pos)
+{		$("#SortedElem").animate(moveELEM(product,currweit,currval,pos,lastpos));}
+    // and the rest of your code
+elemcounter+=1;
+	});
+}
+
+
+</script>
+<style>
+
+body { margin-left:10px; background: url('bck.jpg')}
+ul  { list-style-type: none;padding:12px 0px; }
+ul  li {position:relative; border:3px solid black;; display:inline-block; width:150px; height:150px;
+text-align:center; line-height:36px;margin-left:15px;vertical-align: middle;border-radius: 50%; background-color: white;}
+
+
+.target { color:red; background:white}
+
+.finished { background:lightyellow }
+.placed { background:blue }
+
+ #arr0 , #arr1 ,#arr2,#arr3{ position:absolute; top:-2em; left:14px; padding:0; margin:0; font-weight:bold;  }
+
+ #arr0 { color: blue; }
+ #arr1 { color: red; left:16px;}
+ #arr2 { color: red; left:16px;}
+ #arr3 { color: green;left:45px; }
+ label, select, input[type=button] { font-size:1.1em;  margin-left:8px; }
+
+ input[type=button] { margin-left:16px; padding:1px 12px; }
+
+ select  { font-size:1.1em; }
+ label { font-style: italic;  }
+
+ #OutDiv { margin-top:40px; }
+
+</style>
+
+</head>
+
+<body style="background-image: bck.jpg">
+<h1 style="background-color: dimgrey; color: darksalmon; padding: 30px;">Fractional Knapsack Problem by Murali & Nandit,2015-19 batch</h1>
+<div class="container jumbotron">
+<input id="knapsackWeight" type="number" placeholder="Knapsack Weight"/>
+<input  id="hfCountMenueElemente" name="hfCountMenueElemente" placeholder="Number of Weights" type="number" />
+<button class="btn btn-primary" onclick="addboxes()">Add</button>
+<div  id="EntryDiv" >
+<ul id="ulMenueElementeHinzufuegen"></ul>
+</div>
+<label>Speed <select id="speedSelectList" >
+<option  value="2000" >slow</option>
+<option  value="600" >medium</option>
+<option  value="20" >fast</option>
+</select>
+</label>
+
+<label>Algorithm <select id="algorithmSelectList" >
+<option  value="0" >Selection Sort</option>
+<option  value="1" >Insertion Sort</option>
+</select>
+</label>
+<br>
+<input style="margin-top: 10px; width: 100px;" type="button" class="btn btn-success" value="Start"  onclick="ExecuteSort()" />
+
+<div style="padding: 15px ;float: right; margin-right: 5%; text-align: center; background-color: black; color: wheat;">
+    <h3>Weight Left | Total Value:</h3>
+    <div style="font-size: 35px; color: blue;" id="values">-</div>
+</div>
+
+<div  id="OutDiv" >
+</div>
+
+
+<div  id="SortedElem">
+</div>
+
+<ul id="selected"></ul>
+
+
+
+
+</div>
+
+</div>
+</body></html>
