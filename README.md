@@ -16,3 +16,12 @@ This project is capable of generating animations for fractional knapsack problem
 * If the remaining capacity of the bucket is less than the element’s weight, we break the element and fit into the bucket.This element is      marked in red.
 * We can see the values of current value and remaining capacity of the bucket for every step.
 
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(542).png)
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(543).png)
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(545).png)
+
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(546).png)
+
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(547).png)
+
+![alt text](https://github.com/Murali81/Animation_Code_For_Fractional_Knapsack/blob/master/Pics/Screenshot%20(548).png)
